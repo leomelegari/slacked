@@ -1,13 +1,9 @@
-interface WorkspaceIdPageProps {
-  params: {
-    workspaceId: string;
-  };
-}
+"use client";
 
-export default function WorkspaceIdPage({ params }: WorkspaceIdPageProps) {
+export default function WorkspaceIdPage() {
   return (
     <div>
-      <div>ID: {params.workspaceId}</div>
+      <div>Workspace id page</div>
     </div>
   );
 }
