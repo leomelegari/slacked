@@ -14,6 +14,7 @@ import { MdSend } from "react-icons/md";
 import { PiTextAa } from "react-icons/pi";
 import Hint from "./hint";
 import { Button } from "./ui/button";
+import { cn } from "@/lib/utils";
 
 type EditorValue = {
   image: File | null;
@@ -40,6 +41,7 @@ export default function Editor({
   placeholder = "Write something...",
 }: EditorProps) {
   const [text, setText] = useState<string>("");
+  const [isToolbarVisible, setIsToolbarVisible] = useState<boolean>(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const submitRef = useRef(onSubmit);
@@ -68,6 +70,30 @@ export default function Editor({
     const options: QuillOptions = {
       theme: "snow",
       placeholder: placeholderRef.current,
+      modules: {
+        toolbar: [
+          ["bold", "italic", "underline", "strike"],
+          ["link", "image"],
+          [
+            { list: "ordered" },
+            { list: "bullet" },
+            { list: "check" },
+            { align: [] },
+          ],
+          [{ color: [] }, { background: [] }],
+        ],
+        keyboard: {
+          bindings: {
+            enter: {
+              key: "Enter",
+              handler: () => {
+                // submit form
+                return;
+              },
+            },
+          },
+        },
+      },
     };
 
     const quill = new Quill(editorContainer, options);
@@ -99,6 +125,15 @@ export default function Editor({
     };
   }, [innerRef]);
 
+  const toggleToolbar = () => {
+    setIsToolbarVisible((current) => !current);
+    const toolbarElement = containerRef.current?.querySelector(".ql-toolbar");
+
+    if (toolbarElement) {
+      toolbarElement.classList.toggle("hidden");
+    }
+  };
+
   const isEmpty = text.replace(/<(.|\n)*?>/, "").trim().length === 0;
 
   return (
@@ -106,20 +141,22 @@ export default function Editor({
       <div className="flex flex-col border border-slate-200 rounded-md overflow-hidden focus-within:border-slate-300 focus-within:shadow-sm transition bg-white">
         <div ref={containerRef} className="h-full ql-custom" />
         <div className="flex px-2 pb-2 z-[5]">
-          <Hint label="Hide formatting">
+          <Hint
+            label={!isToolbarVisible ? "Hide formatting" : "Show formatting"}
+          >
             <Button
-              disabled={false}
+              disabled={disabled}
               size="iconSm"
               variant="ghost"
               className=""
-              onClick={() => {}}
+              onClick={toggleToolbar}
             >
               <PiTextAa className="size-4" />
             </Button>
           </Hint>
           <Hint label="Emoji">
             <Button
-              disabled={false}
+              disabled={disabled}
               size="iconSm"
               variant="ghost"
               className=""
@@ -131,7 +168,7 @@ export default function Editor({
           {variant === "create" && (
             <Hint label="Image">
               <Button
-                disabled={false}
+                disabled={disabled}
                 size="iconSm"
                 variant="ghost"
                 className=""
@@ -148,7 +185,7 @@ export default function Editor({
                 variant="outline"
                 size="sm"
                 onClick={() => {}}
-                disabled={false}
+                disabled={disabled}
               >
                 Cancel
               </Button>
@@ -156,7 +193,7 @@ export default function Editor({
                 className="bg-[#007a5a] hover:bg-[#007a5a]/80 text-white"
                 size="sm"
                 onClick={() => {}}
-                disabled={false}
+                disabled={disabled || isEmpty}
               >
                 Save
               </Button>
@@ -164,10 +201,15 @@ export default function Editor({
           )}
           {variant === "create" && (
             <Button
-              disabled={isEmpty}
+              disabled={disabled || isEmpty}
               onClick={() => {}}
               size="iconSm"
-              className="ml-auto bg-[#007a5a] hover:bg-[#007a5a]/80 text-white"
+              className={cn(
+                "ml-auto",
+                isEmpty
+                  ? " bg-white hover:bg-white text-muted-foreground"
+                  : "bg-[#007a5a] hover:bg-[#007a5a]/80 text-white",
+              )}
             >
               <MdSend className="size-4" />
             </Button>

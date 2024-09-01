@@ -91,6 +91,8 @@ body,
 }
 
 .ql-editor {
+  height: 100%;
+  max-height: 250px;
   line-height: 22px !important;
   padding: 8px 12px !important;
   color: #1d1c1d !important;
@@ -101,6 +103,7 @@ body,
 
 .ql-editor a {
   color: #1264a3 !important;
+  
 }
 
 .ql-editor a:hover {
