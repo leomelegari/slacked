@@ -18,8 +18,10 @@ import {
 } from "lucide-react";
 import UserItem from "./user-item";
 import { useCreateChannelModal } from "@/features/channels/store/use-create-channel-modal";
+import { useChannelId } from "@/hooks/use-channel-id";
 
 export default function WorkspaceSidebar() {
+  const channelId = useChannelId();
   const workspaceId = useWorkspaceId();
 
   const [_open, setOpen] = useCreateChannelModal();
@@ -70,12 +72,14 @@ export default function WorkspaceSidebar() {
         onNew={member.role === "admin" ? () => setOpen(true) : undefined}
       >
         {channels?.map((item) => (
-          <SidebarItem
-            key={item._id}
-            icon={HashIcon}
-            label={item.name}
-            id={item._id}
-          />
+          <div key={item._id} className="pl-4">
+            <SidebarItem
+              icon={HashIcon}
+              label={item.name}
+              id={item._id}
+              variant={channelId === item._id ? "active" : "default"}
+            />
+          </div>
         ))}
       </WorkspaceSection>
       <WorkspaceSection
@@ -84,13 +88,14 @@ export default function WorkspaceSidebar() {
         onNew={() => {}}
       >
         {members?.map((item) => (
-          <UserItem
-            key={item._id}
-            id={member._id}
-            label={item.user.name}
-            image={item.user.image}
-            // variant={member._id === item}
-          />
+          <div key={item._id} className="pl-4">
+            <UserItem
+              id={member._id}
+              label={item.user.name}
+              image={item.user.image}
+              // variant={member._id === item}
+            />
+          </div>
         ))}
       </WorkspaceSection>
     </div>
